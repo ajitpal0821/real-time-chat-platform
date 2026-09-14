@@ -1,0 +1,46 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chat-api
+    command: ["node", "src/server.js"]
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis: 
+        condition: service_healthy
+    restart: unless-stopped
+    stop_grace_period: 10s
+
+    healthcheck:
+      test:
+        ['CMD',"wget","--spider","--q","http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: chat-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s 
+      retries: 3
+
+volumes:
+  redis_data:
