@@ -1,4 +1,12 @@
 {
+  "name": "real-time-chat-platform",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "client": "npm --prefix client start",
+    "server": "npm --prefix Server run dev",
+    "start": "npm --prefix Server start"
+  },
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",
     "redis": "^6.2.1",

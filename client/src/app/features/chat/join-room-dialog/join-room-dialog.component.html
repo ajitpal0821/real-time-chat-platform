@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Join Room</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="joinForm" (ngSubmit)="join()">
+    <mat-form-field appearance="outline">
+      <mat-label>Room ID</mat-label>
+      <input
+        matInput
+        formControlName="roomId"
+        placeholder="Enter room ID or code"
+        autocomplete="off"
+      />
+      @if (joinForm.controls.roomId.hasError('required') && joinForm.controls.roomId.touched) {
+        <mat-error>
+          Room ID is required
+        </mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">
+    Cancel
+  </button>
+  <button mat-flat-button color="primary" type="button" (click)="join()" [disabled]="joinForm.invalid">
+    Join
+  </button>
+</mat-dialog-actions>

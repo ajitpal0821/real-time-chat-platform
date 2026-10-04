@@ -1,0 +1,74 @@
+<div class="chat-window">
+  <!-- Top Header Bar -->
+  <header class="chat-header">
+    <div class="header-left">
+      @if (chatState.selectedRoom(); as room) {
+      <div class="room-avatar">
+        <mat-icon>{{ room.isPrivate ? 'lock' : 'tag' }}</mat-icon>
+      </div>
+      <div class="room-info">
+        <h2>{{ room.name }}</h2>
+        <div class="status-indicator">
+          @if (chatState.typingUsers().length > 0) {
+          <span class="typing-dots"><i></i><i></i><i></i></span>
+          <span class="status-text">
+            {{ chatState.typingUsers().length === 1 ? 'Someone is typing...' : 'Several people are typing...' }}
+          </span>
+          } @else {
+          <span class="status-dot"></span>
+          <span class="status-text">Connected • Live</span>
+          }
+        </div>
+
+      </div>
+      } @else {
+      <div class="room-avatar default-avatar">
+        <mat-icon>chat_bubble_outline</mat-icon>
+      </div>
+      <div class="room-info">
+        <h2>No Channel Selected</h2>
+        <span class="muted-text">Choose a room to begin chatting</span>
+      </div>
+      }
+    </div>
+
+    <!-- Right Header Actions (Visible when a room is active) -->
+    @if (chatState.selectedRoom();as room) {
+    <div class="header-actions">
+      <button class="action-btn" type="button" title="Room Members" (click)="showMembers(room)">
+        <mat-icon>group</mat-icon>
+      </button>
+      <button class="action-btn" type="button" title="Search messages">
+        <mat-icon>search</mat-icon>
+      </button>
+      <button mat-icon-button type="button" matTooltip="Leave room" (click)="leaveRoom(room)">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+    }
+  </header>
+
+  <!-- Message Stream Area -->
+  <div class="message-area" [class.is-empty]="!chatState.selectedRoom()">
+    @if (chatState.selectedRoom()) {
+    <app-message-list></app-message-list>
+    } @else {
+    <div class="empty-state-card">
+      <div class="empty-icon-ring">
+        <mat-icon>forum</mat-icon>
+      </div>
+      <h3>Welcome to PulseChat</h3>
+      <p>Select any active channel from the sidebar to read and send real-time messages.</p>
+      <div class="empty-hint">
+        <mat-icon>lightbulb</mat-icon>
+        <span>Tip: You can create your own channel using the <strong>+</strong> button on the sidebar.</span>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Message Input Bar -->
+  @if (chatState.selectedRoom()) {
+  <app-message-input></app-message-input>
+  }
+</div>

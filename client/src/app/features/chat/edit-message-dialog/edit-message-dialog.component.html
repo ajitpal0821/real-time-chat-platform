@@ -1,0 +1,46 @@
+<div class="edit-dialog">
+  <div class="dialog-header">
+    <div class="header-icon-box">
+      <mat-icon>edit_note</mat-icon>
+    </div>
+    <div>
+      <h2 mat-dialog-title class="dialog-title">Edit Message</h2>
+      <p class="dialog-subtitle">Make changes to your message content</p>
+    </div>
+  </div>
+
+  <mat-dialog-content class="dialog-content-area">
+    <mat-form-field appearance="outline" class="edit-form-field">
+      <mat-label>Message content</mat-label>
+      <textarea
+        matInput
+        rows="4"
+        maxlength="5000"
+        placeholder="Edit your message..."
+        [formControl]="form.controls.content"
+      ></textarea>
+      @if (form.controls.content.hasError('required')) {
+        <mat-error>Message content cannot be empty</mat-error>
+      }
+      @if (form.controls.content.hasError('maxlength')) {
+        <mat-error>Message cannot exceed 5000 characters</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-footer">
+    <button mat-button class="btn-cancel" type="button" (click)="cancel()">
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      class="btn-save"
+      type="button"
+      [disabled]="form.invalid || !form.controls.content.value.trim()"
+      (click)="save()"
+    >
+      <mat-icon>check</mat-icon>
+      Save Changes
+    </button>
+  </mat-dialog-actions>
+</div>

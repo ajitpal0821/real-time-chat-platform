@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>Create New Room</h2>
+
+<mat-dialog-content>
+
+    <form [formGroup]="roomForm" (ngSubmit)="create()">
+
+        <mat-form-field appearance="outline">
+            <mat-label>Room name</mat-label>
+
+            <input matInput formControlName="name" placeholder="Enter room name" autocomplete="off" />
+
+            @if (roomForm.controls.name.hasError('required')) {
+            <mat-error>
+                Room name is required
+            </mat-error>
+            }
+
+            @if (roomForm.controls.name.hasError('minlength')) {
+            <mat-error>
+                Room name must be at least 2 characters
+            </mat-error>
+            }
+
+            @if (roomForm.controls.name.hasError('maxlength')) {
+            <mat-error>
+                Room name cannot exceed 100 characters
+            </mat-error>
+            }
+
+        </mat-form-field>
+
+    </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+    <button mat-button type="button" (click)="cancel()">
+        Cancel
+    </button>
+
+    <button mat-flat-button type="button" (click)="create()" [disabled]="roomForm.invalid">
+        Create
+    </button>
+
+</mat-dialog-actions>

@@ -12,7 +12,8 @@ const registerSocketAuth = (socket, next) => {
 
         socket.user = {
             userId: decoded.userId
-        }
+        };
+        socket.data.userId = decoded.userId;
 
         next();
     }

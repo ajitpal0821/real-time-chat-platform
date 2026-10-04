@@ -1,0 +1,61 @@
+<div class="message-list-wrapper" #scrollContainer (scroll)="onScroll($event)">
+  @if (loading) {
+  <div class="message-state loading-state">
+    <div class="spinner-ring"></div>
+    <p>Loading messages...</p>
+  </div>
+  } @else if (errorMessage) {
+  <div class="message-state error-state">
+    <p>{{ errorMessage }}</p>
+  </div>
+  } @else if (messageState.message().length === 0) {
+  <div class="message-state empty-state">
+    <div class="empty-icon-wrap">💬</div>
+    <p class="empty-title">No messages yet</p>
+    <span class="empty-sub">Start the conversation in this channel!</span>
+  </div>
+  } @else {
+  <div class="messages-container">
+    @for (message of messageState.message(); track message._id) {
+    <div class="message-row" [class.own-message]="isOwnMessage(message)">
+      @if (!isOwnMessage(message)) {
+      <div class="sender-avatar">
+        {{ getSenderInitial(message) }}
+      </div>
+      }
+
+      <div class="bubble-wrap">
+        <div class="message-meta">
+          <span class="sender-name">{{ getSenderName(message) }}</span>
+          <span class="message-time">{{ message.createdAt | date:'shortTime' }}</span>
+        </div>
+
+        <div class="message-bubble">
+          <p class="message-text">{{ message.content }}</p>
+        </div>
+        @if (isOwnMessage(message)) {
+        <div class="message-actions">
+          <button mat-icon-button type="button" (click)="editMessage(message)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button type="button" (click)="deleteMessage(message)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  @if (!isAtBottom) {
+  <button class="scroll-bottom-fab" type="button" (click)="scrollToBottomSmooth()" title="Scroll to bottom">
+    <mat-icon>arrow_downward</mat-icon>
+    @if (unreadCount > 0) {
+    <span class="unread-pill">{{ unreadCount }} new</span>
+    }
+  </button>
+  }
+</div>

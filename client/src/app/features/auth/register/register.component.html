@@ -1,0 +1,155 @@
+<div class="auth-viewport">
+  <!-- Subtle Background Grid -->
+  <div class="bg-grid-overlay"></div>
+
+  <div class="auth-box">
+    <!-- Brand / Header -->
+    <div class="auth-brand">
+      <div class="brand-symbol">
+        <span class="material-icons">chat_bubble</span>
+      </div>
+      <h1 class="brand-name">Pulse<span>Chat</span></h1>
+      <p class="brand-tagline">Real-time messaging platform</p>
+    </div>
+
+    <!-- Solid Card -->
+    <div class="auth-card">
+      <div class="card-head">
+        <h2>Create Account</h2>
+        <p>Set up your profile to start real-time messaging</p>
+      </div>
+
+      <!-- Server Error Alert -->
+      <div *ngIf="errorMessage" class="solid-alert alert-error">
+        <span class="material-icons alert-icon">error_outline</span>
+        <div class="alert-body">
+          <span class="alert-title">Registration Failed</span>
+          <span class="alert-desc">{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <!-- Server Success Alert -->
+      <div *ngIf="successMessage" class="solid-alert alert-success">
+        <span class="material-icons alert-icon">check_circle</span>
+        <div class="alert-body">
+          <span class="alert-title">Success</span>
+          <span class="alert-desc">{{ successMessage }}</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+        <!-- Full Name -->
+        <div class="field-group">
+          <label for="reg-name" class="field-label">Full Name</label>
+          <div class="field-control" [class.field-error]="registerForm.controls['name'].touched && registerForm.controls['name'].invalid">
+            <span class="material-icons field-icon">person_outline</span>
+            <input
+              id="reg-name"
+              type="text"
+              placeholder="e.g. Alex Morgan"
+              formControlName="name"
+              autocomplete="name"
+              class="field-input"
+            />
+          </div>
+          <div *ngIf="registerForm.controls['name'].touched && registerForm.controls['name'].invalid" class="field-msg">
+            <span *ngIf="registerForm.controls['name'].errors?.['required']">Full name is required</span>
+            <span *ngIf="registerForm.controls['name'].errors?.['minlength']">Name must be at least 3 characters</span>
+            <span *ngIf="registerForm.controls['name'].errors?.['maxlength']">Name must be at most 20 characters</span>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="field-group">
+          <label for="reg-email" class="field-label">Email address</label>
+          <div class="field-control" [class.field-error]="registerForm.controls['email'].touched && registerForm.controls['email'].invalid">
+            <span class="material-icons field-icon">alternate_email</span>
+            <input
+              id="reg-email"
+              type="email"
+              placeholder="name@example.com"
+              formControlName="email"
+              autocomplete="email"
+              class="field-input"
+            />
+          </div>
+          <div *ngIf="registerForm.controls['email'].touched && registerForm.controls['email'].invalid" class="field-msg">
+            <span *ngIf="registerForm.controls['email'].errors?.['required']">Email is required</span>
+            <span *ngIf="registerForm.controls['email'].errors?.['email']">Please enter a valid email address</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="field-group">
+          <div class="label-split">
+            <label for="reg-password" class="field-label">Password</label>
+            <span *ngIf="registerForm.get('password')?.value" class="strength-pill" [style.color]="passwordStrength.color">
+              {{ passwordStrength.label }}
+            </span>
+          </div>
+          <div class="field-control" [class.field-error]="registerForm.controls['password'].touched && registerForm.controls['password'].invalid">
+            <span class="material-icons field-icon">lock_outline</span>
+            <input
+              id="reg-password"
+              [type]="hidePassword ? 'password' : 'text'"
+              placeholder="Choose a password (min 6 chars)"
+              formControlName="password"
+              autocomplete="new-password"
+              class="field-input"
+            />
+            <button
+              type="button"
+              class="btn-toggle-eye"
+              (click)="togglePasswordVisibility()"
+              tabindex="-1"
+              [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+            >
+              <span class="material-icons">{{ hidePassword ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+
+          <!-- Password Strength Bar -->
+          <div *ngIf="registerForm.get('password')?.value" class="strength-bar">
+            <div class="segment" [class.is-filled]="passwordStrength.score >= 1" [style.background-color]="passwordStrength.score >= 1 ? passwordStrength.color : ''"></div>
+            <div class="segment" [class.is-filled]="passwordStrength.score >= 2" [style.background-color]="passwordStrength.score >= 2 ? passwordStrength.color : ''"></div>
+            <div class="segment" [class.is-filled]="passwordStrength.score >= 3" [style.background-color]="passwordStrength.score >= 3 ? passwordStrength.color : ''"></div>
+          </div>
+
+          <div *ngIf="registerForm.controls['password'].touched && registerForm.controls['password'].invalid" class="field-msg">
+            <span *ngIf="registerForm.controls['password'].errors?.['required']">Password is required</span>
+            <span *ngIf="registerForm.controls['password'].errors?.['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+
+        <!-- Submit CTA -->
+        <button
+          type="submit"
+          class="btn-solid-primary"
+          [disabled]="loading"
+          [class.is-busy]="loading"
+        >
+          <span *ngIf="!loading" class="btn-text">
+            <span>Create Free Account</span>
+            <span class="material-icons btn-icon">arrow_forward</span>
+          </span>
+          <span *ngIf="loading" class="btn-busy-state">
+            <span class="btn-spinner"></span>
+            <span>Creating account...</span>
+          </span>
+        </button>
+      </form>
+
+      <!-- Footer Link -->
+      <div class="card-foot">
+        <p>Already have an account? <a routerLink="/login" class="link-bold">Sign in here</a></p>
+      </div>
+    </div>
+
+    <!-- Security Indicator -->
+    <div class="auth-security-note">
+      <span class="material-icons note-icon">verified_user</span>
+      <span>Safe & Protected Real-Time Communication</span>
+    </div>
+  </div>
+</div>

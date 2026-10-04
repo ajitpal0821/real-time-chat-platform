@@ -1,0 +1,150 @@
+<div class="members-dialog">
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <div class="header-left">
+      <div class="header-icon-box">
+        <mat-icon>groups</mat-icon>
+      </div>
+      <div class="header-text-group">
+        <div class="title-row">
+          <h2 mat-dialog-title class="dialog-title">Channel Members</h2>
+          @if (!loading() && !errorMessage() && members().length > 0) {
+          <span class="member-count-pill">
+            <span class="pulse-dot"></span>
+            {{ members().length }} {{ members().length === 1 ? 'member' : 'members' }}
+          </span>
+          }
+        </div>
+        <p class="dialog-subtitle">People who have access to this room</p>
+      </div>
+    </div>
+
+    <button class="btn-icon-close" mat-dialog-close type="button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Search & Filter Bar (shown if members exist) -->
+  @if (!loading() && !errorMessage() && members().length > 3) {
+  <div class="dialog-search-bar">
+    <div class="search-input-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text" placeholder="Filter members by name, email or role..." [value]="searchQuery()"
+        (input)="onSearchChange($event)" class="search-input" />
+      @if (searchQuery()) {
+      <button class="btn-clear-search" type="button" (click)="clearSearch()" aria-label="Clear search">
+        <mat-icon>clear</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
+  }
+
+  <mat-dialog-content class="dialog-content-area">
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="dialog-state">
+      <div class="spinner-ring"></div>
+      <p class="state-title">Loading members...</p>
+      <span class="state-sub">Fetching member list from server</span>
+    </div>
+    }
+
+    <!-- Error State -->
+    @else if (errorMessage()) {
+    <div class="dialog-state error-state">
+      <div class="state-icon-box error">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+      <p class="state-title">{{ errorMessage() }}</p>
+      <span class="state-sub">Could not retrieve room member directory</span>
+      <button class="btn-retry" type="button" (click)="loadRoomMembers()">
+        <mat-icon>refresh</mat-icon>
+        <span>Try Again</span>
+      </button>
+    </div>
+    }
+
+    <!-- Empty State (No members in room) -->
+    @else if (members().length === 0) {
+    <div class="dialog-state empty-state">
+      <div class="state-icon-box">
+        <mat-icon>group_off</mat-icon>
+      </div>
+      <p class="state-title">No members found</p>
+      <span class="state-sub">This room doesn't have any registered members yet.</span>
+    </div>
+    }
+
+    <!-- Empty Search Results State -->
+    @else if (filteredMembers().length === 0) {
+    <div class="dialog-state empty-search-state">
+      <div class="state-icon-box">
+        <mat-icon>person_search</mat-icon>
+      </div>
+      <p class="state-title">No matching members</p>
+      <span class="state-sub">No one matches "<strong>{{ searchQuery() }}</strong>"</span>
+      <button class="btn-clear-filter" type="button" (click)="clearSearch()">
+        <span>Clear filter</span>
+      </button>
+    </div>
+    }
+
+    <!-- Members List -->
+    @else {
+    <div class="members-list">
+      @for (member of filteredMembers(); track member._id) {
+      <div class="member-card">
+        <!-- Avatar -->
+        <div class="member-avatar-wrapper">
+          <div class="member-avatar" [style.background]="getAvatarGradient(member)"
+            [class.is-owner]="member.role === 'owner'" [class.is-admin]="member.role === 'admin'">
+            <span>{{ getMemberInitial(member) }}</span>
+          </div>
+          <span class="presence-badge" [class.is-online]="chatState.isUserOnline(getMemberId(member))"
+            [title]="chatState.isUserOnline(getMemberId(member)) ? 'Online' : 'Offline'"></span>
+        </div>
+
+        <!-- User Info -->
+        <div class="member-info">
+          <div class="member-name-row">
+            <span class="member-name">{{ getMemberName(member) }}</span>
+          </div>
+          @if (getMemberEmail(member)) {
+          <span class="member-email">{{ getMemberEmail(member) }}</span>
+          }
+        </div>
+
+        <!-- Role Badge -->
+        <div class="member-role" [ngClass]="'role-' + member.role">
+          @if (member.role === 'owner') {
+          <mat-icon class="role-icon">workspace_premium</mat-icon>
+          <span>Owner</span>
+          } @else if (member.role === 'admin') {
+          <mat-icon class="role-icon">shield</mat-icon>
+          <span>Admin</span>
+          } @else {
+          <mat-icon class="role-icon">person</mat-icon>
+          <span>Member</span>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </mat-dialog-content>
+
+  <!-- Dialog Footer Actions -->
+  <mat-dialog-actions align="end" class="dialog-footer">
+    <div class="footer-meta">
+      @if (!loading() && !errorMessage() && members().length > 0) {
+      <span class="showing-count">
+        Showing {{ filteredMembers().length }} of {{ members().length }}
+      </span>
+      }
+    </div>
+    <button mat-flat-button class="btn-close" mat-dialog-close type="button">
+      Done
+    </button>
+  </mat-dialog-actions>
+</div>

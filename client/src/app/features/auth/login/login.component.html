@@ -1,0 +1,123 @@
+<div class="auth-viewport">
+  <!-- Subtle Background Grid -->
+  <div class="bg-grid-overlay"></div>
+
+  <div class="auth-box">
+    <!-- Brand / Header -->
+    <div class="auth-brand">
+      <div class="brand-symbol">
+        <span class="material-icons">chat_bubble</span>
+      </div>
+      <h1 class="brand-name">Pulse<span>Chat</span></h1>
+      <p class="brand-tagline">Real-time messaging platform</p>
+    </div>
+
+    <!-- Solid Card -->
+    <div class="auth-card">
+      <div class="card-head">
+        <h2>Sign In</h2>
+        <p>Enter your account credentials to access your chats</p>
+      </div>
+
+      <!-- Server Error Alert -->
+      <div *ngIf="errorMessage" class="solid-alert alert-error">
+        <span class="material-icons alert-icon">error_outline</span>
+        <div class="alert-body">
+          <span class="alert-title">Authentication Failed</span>
+          <span class="alert-desc">{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+        <!-- Email Field -->
+        <div class="field-group">
+          <label for="login-email" class="field-label">Email address</label>
+          <div class="field-control" [class.field-error]="loginForm.controls['email'].touched && loginForm.controls['email'].invalid">
+            <span class="material-icons field-icon">alternate_email</span>
+            <input
+              id="login-email"
+              type="email"
+              placeholder="name@example.com"
+              formControlName="email"
+              autocomplete="email"
+              class="field-input"
+            />
+          </div>
+          <div *ngIf="loginForm.controls['email'].touched && loginForm.controls['email'].invalid" class="field-msg">
+            <span *ngIf="loginForm.controls['email'].errors?.['required']">Email is required</span>
+            <span *ngIf="loginForm.controls['email'].errors?.['email']">Please enter a valid email address</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="field-group">
+          <div class="label-split">
+            <label for="login-password" class="field-label">Password</label>
+          </div>
+          <div class="field-control" [class.field-error]="loginForm.controls['password'].touched && loginForm.controls['password'].invalid">
+            <span class="material-icons field-icon">lock_outline</span>
+            <input
+              id="login-password"
+              [type]="hidePassword ? 'password' : 'text'"
+              placeholder="Enter your password"
+              formControlName="password"
+              autocomplete="current-password"
+              class="field-input"
+            />
+            <button
+              type="button"
+              class="btn-toggle-eye"
+              (click)="togglePasswordVisibility()"
+              tabindex="-1"
+              [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+            >
+              <span class="material-icons">{{ hidePassword ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+          <div *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].invalid" class="field-msg">
+            <span *ngIf="loginForm.controls['password'].errors?.['required']">Password is required</span>
+            <span *ngIf="loginForm.controls['password'].errors?.['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="form-row">
+          <label class="check-container">
+            <input type="checkbox" formControlName="rememberMe" />
+            <span class="check-box"></span>
+            <span class="check-text">Remember this device</span>
+          </label>
+        </div>
+
+        <!-- Submit CTA -->
+        <button
+          type="submit"
+          class="btn-solid-primary"
+          [disabled]="loading"
+          [class.is-busy]="loading"
+        >
+          <span *ngIf="!loading" class="btn-text">
+            <span>Sign In</span>
+            <span class="material-icons btn-icon">arrow_forward</span>
+          </span>
+          <span *ngIf="loading" class="btn-busy-state">
+            <span class="btn-spinner"></span>
+            <span>Signing in...</span>
+          </span>
+        </button>
+      </form>
+
+      <!-- Footer Link -->
+      <div class="card-foot">
+        <p>New to PulseChat? <a routerLink="/register" class="link-bold">Create an account</a></p>
+      </div>
+    </div>
+
+    <!-- Security Indicator -->
+    <div class="auth-security-note">
+      <span class="material-icons note-icon">lock</span>
+      <span>Encrypted Real-Time WebSocket Connection</span>
+    </div>
+  </div>
+</div>

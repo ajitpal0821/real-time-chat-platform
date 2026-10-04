@@ -1,0 +1,198 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.message-input-container {
+  padding: 0 20px 16px 20px;
+  background-color: var(--bg-surface, #0f121b);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Error Banner */
+.input-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 10px;
+  color: #fecdd3;
+  font-size: 0.82rem;
+  animation: slideDown 0.2s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--color-error, #f43f5e);
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .btn-dismiss-error {
+    background: transparent;
+    border: none;
+    color: #fecdd3;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #fecdd3;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+/* Input Card */
+.input-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app, #080a0f);
+  border: 1px solid var(--border-subtle, #1e2436);
+  border-radius: 14px;
+  padding: 10px 14px 8px 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  &:focus-within {
+    border-color: var(--accent-primary, #6366f1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12), 0 4px 14px rgba(0, 0, 0, 0.3);
+  }
+
+  .textarea-wrapper {
+    width: 100%;
+
+    .chat-textarea {
+      width: 100%;
+      min-height: 24px;
+      max-height: 160px;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      color: var(--text-primary, #f8fafc);
+      font-size: 0.92rem;
+      font-family: inherit;
+      line-height: 1.45;
+      padding: 2px 0;
+
+      &::placeholder {
+        color: var(--text-muted, #64748b);
+        opacity: 0.75;
+      }
+    }
+  }
+
+  .input-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+    gap: 12px;
+
+    .left-hints {
+      .shortcut-hint {
+        font-size: 0.7rem;
+        color: var(--text-muted, #64748b);
+        display: flex;
+        align-items: center;
+        gap: 3px;
+
+        kbd {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border-subtle, #1e2436);
+          border-radius: 4px;
+          padding: 1px 4px;
+          font-family: inherit;
+          font-size: 0.68rem;
+          color: var(--text-secondary, #94a3b8);
+        }
+      }
+    }
+
+    .right-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .btn-send {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted, #64748b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: not-allowed;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+
+        .send-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+
+        &.is-active {
+          cursor: pointer;
+          background: var(--accent-primary, #6366f1);
+          color: #ffffff;
+          box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+
+          &:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+          }
+
+          &:active {
+            transform: scale(0.95);
+          }
+        }
+
+        .send-spinner {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-top-color: #ffffff;
+          border-radius: 50%;
+          animation: spin 0.6s linear infinite;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

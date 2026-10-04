@@ -1,0 +1,77 @@
+<div class="room-list">
+  <!-- Brand / Logo Header -->
+  <div class="sidebar-brand">
+    <div class="brand-symbol">
+      <mat-icon>chat_bubble</mat-icon>
+    </div>
+    <div class="brand-info">
+      <h1 class="brand-name">Pulse<span>Chat</span></h1>
+      <span class="brand-badge">PRO</span>
+    </div>
+  </div>
+
+  <div class="room-header">
+    <div class="header-title-wrap">
+      <h2>Channels</h2>
+      <span *ngIf="chatState.rooms().length" class="room-count">{{ chatState.rooms().length }}</span>
+    </div>
+
+    <div class="header-actions">
+      <button
+        class="header-btn"
+        type="button"
+        aria-label="Join room"
+        title="Join an existing room by ID"
+        (click)="openJoinRoomDialog()"
+      >
+        <mat-icon>login</mat-icon>
+      </button>
+
+      <button
+        class="header-btn"
+        type="button"
+        aria-label="Create room"
+        title="Create a new room"
+        (click)="openCreateRoomDialog()"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (loading && chatState.rooms().length === 0) {
+    <div class="state">
+      <span>Loading channels...</span>
+    </div>
+  }
+
+  @if (errorMessage && chatState.rooms().length === 0) {
+    <div class="state error">
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  @if (chatState.rooms().length > 0 || (!loading && !errorMessage)) {
+    <div class="rooms">
+      @for (room of chatState.rooms(); track room._id) {
+        <button
+          class="room-item"
+          type="button"
+          [class.selected]="isRoomSelected(room)"
+          (click)="selectRoom(room)"
+        >
+          <div class="room-icon-box">
+            <mat-icon>{{ room.isPrivate ? 'lock' : 'tag' }}</mat-icon>
+          </div>
+          <span class="room-name">{{ room.name }}</span>
+        </button>
+      }
+
+      @if (chatState.rooms().length === 0 && !loading && !errorMessage) {
+        <div class="state">
+          <span>No channels found.</span>
+        </div>
+      }
+    </div>
+  }
+</div>

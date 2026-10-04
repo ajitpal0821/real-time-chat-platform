@@ -3,7 +3,7 @@ const { createAdapter } = require("@socket.io/redis-adapter");
 const { redisClient } = require("../config/redis");
 const registerSocketAuth = require("./socket.auth.js");
 const registerChatSocket = require("./chat.socket.js");
-const { userConnected, userDisconnected, refreshuserPresence } = require("../services/presence.service.js");
+const { userConnected, userDisconnected, refreshuserPresence, isUserOnline } = require("../services/presence.service.js");
 
 let io;
 
@@ -77,6 +77,32 @@ const initSocket = async (server) => {
         const { userId } = socket.user;
         await userConnected(userId, socket.id);
 
+
+
+
+        // broadcase to all other scokets that this user is online
+
+        socket.broadcast.emit("user_status_changed", {
+            userId,
+            status: "online"
+        })
+
+        // get current list of online users
+        socket.on("get_online_users", async (data, callback) => {
+            const ack = typeof data === "function" ? data : callback;
+            try {
+                const onlineSockets = await io.fetchSockets();
+                const onlineUserIds = [...new Set(onlineSockets.map(s => s.data?.userId || s.user?.userId).filter(Boolean))];
+                if (typeof ack === "function") {
+                    ack({ success: true, onlineUserIds });
+                }
+            } catch (error) {
+                if (typeof ack === "function") {
+                    ack({ success: false, onlineUserIds: [] });
+                }
+            }
+        });
+
         const presenceInterval = setInterval(async () => {
             try {
                 await refreshuserPresence(userId);
@@ -93,6 +119,16 @@ const initSocket = async (server) => {
         socket.on("disconnect", async () => {
             clearInterval(presenceInterval);
             await userDisconnected(userId, socket.id);
+
+            const isStillOnline = await isUserOnline(userId);
+
+            if (!isStillOnline) {
+                io.emit("user_status_changed", {
+                    userId,
+                    status: "offline"
+                })
+            }
+
             console.log("Socket disconnected:", socket.id);
         })
     })

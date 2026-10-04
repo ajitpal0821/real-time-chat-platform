@@ -1,0 +1,37 @@
+<div class="message-input-container">
+  @if (errorMessage) {
+  <div class="input-error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+    <button class="btn-dismiss-error" type="button" (click)="errorMessage = ''">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  }
+
+  <form class="input-card" [formGroup]="messageForm" (ngSubmit)="sendMessage()">
+    <div class="textarea-wrapper">
+      <textarea formControlName="content" rows="1" maxlength="5000" [placeholder]="placeholderText()"
+        (keydown)="onKeyDown($event)" class="chat-textarea" (input)="onTyping()"></textarea>
+    </div>
+
+    <div class="input-actions-bar">
+      <div class="left-hints">
+        <span class="shortcut-hint">
+          <kbd>Enter</kbd> to send, <kbd>Shift + Enter</kbd> for new line
+        </span>
+      </div>
+
+      <div class="right-actions">
+        <button class="btn-send" type="submit" [disabled]="!hasContent || sending || !chatState.selectedRoom()"
+          [class.is-active]="hasContent && !sending" [attr.aria-label]="sending ? 'Sending message' : 'Send message'">
+          @if (sending) {
+          <div class="send-spinner"></div>
+          } @else {
+          <mat-icon class="send-icon">arrow_upward</mat-icon>
+          }
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

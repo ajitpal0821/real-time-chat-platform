@@ -94,7 +94,7 @@ const registerChatSocket = (io, socket) => {
 
     socket.on("typing_start", async ({ roomId }) => {
         const userId = socket.user.userId;
-        const member = await RoomMemberRepository.findByRoomAndUser(roomId, userId);
+        const member = await RoomMemberRepository.findMember(roomId, userId);
 
         if (!member) {
             {
