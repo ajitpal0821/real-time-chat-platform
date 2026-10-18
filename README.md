@@ -1,4 +1,4 @@
-# PulseChat — Real-Time Scalable Chat Platform
+<!-- # PulseChat — Real-Time Scalable Chat Platform
 
 [![Angular](https://img.shields.io/badge/Angular-18+-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -297,4 +297,5 @@ From the root directory, start both the Server and Angular Client:
 ---
 
 ## 📄 License
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details. -->
+Coming Soon..
