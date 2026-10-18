@@ -18,8 +18,11 @@ const registerSocketAuth = (socket, next) => {
         next();
     }
     catch (error) {
-        console.error("Socket authentication error:", error);
-        next(new Error("Authentication Error"));
+        if (error.name === "TokenExpiredError") {
+            return next(new Error("TOKEN_EXPIRED"));
+        }
+        return next(new Error("INVALID_TOKEN"));
+
     }
 }
 

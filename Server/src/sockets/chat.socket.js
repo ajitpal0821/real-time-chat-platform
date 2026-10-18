@@ -1,10 +1,26 @@
 const RoomMemberRepository = require("../repositories/roomMember.repository");
 const messageService = require("../services/message.service");
-
+const {
+    joinLeaveRoomSchema,
+    sendMessageSocketSchema,
+    updateMessageSocketSchema,
+    deleteMessageSocketSchema,
+    typingSocketSchema
+} = require("../validations/socket.validation");
 const registerChatSocket = (io, socket) => {
-    socket.on("join_room", async ({ roomId }, callback) => {
-        try {
 
+
+    socket.on("join_room", async (data, callback) => {
+        try {
+            const validation = joinLeaveRoomSchema.safeParse(data);
+            if (!validation.success) {
+                return callback?.({
+                    success: false,
+                    code: "VALIDATION_ERROR",
+                    message: validation.error.issues[0]?.message || "Invalid room payload"
+                });
+            }
+            const { roomId } = validation.data;
             const userId = socket.user.userId;
             const roomMember = await RoomMemberRepository.findMember(roomId, userId);
 
@@ -21,8 +37,17 @@ const registerChatSocket = (io, socket) => {
         }
     });
 
-    socket.on("leave_room", async ({ roomId }, callback) => {
+    socket.on("leave_room", async (data, callback) => {
         try {
+            const validation = joinLeaveRoomSchema.safeParse(data);
+            if (!validation.success) {
+                return callback?.({
+                    success: false,
+                    code: "VALIDATION_ERROR",
+                    message: validation.error.issues[0]?.message || "Invalid room payload"
+                });
+            }
+            const { roomId } = validation.data;
             socket.leave(roomId);
             callback?.({ success: true, message: `Left room ${roomId}` });
             socket.to(roomId).emit("user_left", { userId: socket.user.userId, roomId });
@@ -33,8 +58,17 @@ const registerChatSocket = (io, socket) => {
         }
     })
 
-    socket.on("send_message", async ({ roomId, content, messageType }, callback) => {
+    socket.on("send_message", async (data, callback) => {
         try {
+            const validation = sendMessageSocketSchema.safeParse(data);
+            if (!validation.success) {
+                return callback?.({
+                    success: false,
+                    code: "VALIDATION_ERROR",
+                    message: validation.error.issues[0]?.message || "Invalid message payload"
+                });
+            }
+            const { roomId, content, messageType } = validation.data;
             const userId = socket.user.userId;
             const member = await RoomMemberRepository.findMember(roomId, userId);
             if (!member) {
@@ -54,8 +88,18 @@ const registerChatSocket = (io, socket) => {
         }
     });
 
-    socket.on("update_message", async ({ roomId, messageId, content }, callback) => {
+    socket.on("update_message", async (data, callback) => {
         try {
+
+            const validation = updateMessageSocketSchema.safeParse(data);
+            if (!validation.success) {
+                return callback?.({
+                    success: false,
+                    code: "VALIDATION_ERROR",
+                    message: validation.error.issues[0]?.message || "Invalid update payload"
+                });
+            }
+            const { roomId, messageId, content } = validation.data;
             const userId = socket.user.userId;
             const member = await RoomMemberRepository.findMember(roomId, userId);
 
@@ -73,8 +117,17 @@ const registerChatSocket = (io, socket) => {
         }
     });
 
-    socket.on("delete_message", async ({ roomId, messageId }, callback) => {
+    socket.on("delete_message", async (data, callback) => {
         try {
+            const validation = deleteMessageSocketSchema.safeParse(data);
+            if (!validation.success) {
+                return callback?.({
+                    success: false,
+                    code: "VALIDATION_ERROR",
+                    message: validation.error.issues[0]?.message || "Invalid delete payload"
+                });
+            }
+            const { roomId, messageId } = validation.data;
             const userId = socket.user.userId;
             const member = await RoomMemberRepository.findMember(roomId, userId);
 
@@ -92,7 +145,10 @@ const registerChatSocket = (io, socket) => {
         }
     });
 
-    socket.on("typing_start", async ({ roomId }) => {
+    socket.on("typing_start", async (data) => {
+        const validation = typingSocketSchema.safeParse(data);
+        if (!validation.success) return;
+        const { roomId } = validation.data;
         const userId = socket.user.userId;
         const member = await RoomMemberRepository.findMember(roomId, userId);
 
@@ -109,12 +165,15 @@ const registerChatSocket = (io, socket) => {
 
     socket.on(
         "typing_stop",
-        async ({ roomId }) => {
-
+        async (data) => {
+            const validation = typingSocketSchema.safeParse(data);
+            if (!validation.success) return;
+            const { roomId } = validation.data
+            const userId = socket.user.userId;
             const member =
                 await RoomMemberRepository.findMember(
                     roomId,
-                    socket.user.userId
+                    userId
                 );
 
             if (!member) {

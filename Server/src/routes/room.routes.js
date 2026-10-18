@@ -1,22 +1,19 @@
 const express = require('express');
-
 const router = express.Router();
-
 const authenticate = require("../middleware/auth.middleware");
-
-
 const validate = require("../middleware/validate.middleware");
 const roomController = require("../controllers/room.controller");
 const { createRoomSchema } = require("../validations/room.validation");
+const { roomIdParamSchema } = require("../validations/common.validation")
 
 
 router.post("/", authenticate, validate(createRoomSchema), roomController.createRoom);
-router.get("/:roomId", authenticate, roomController.getRoom);
 router.get("/", authenticate, roomController.getMyRooms);
 
+router.get("/:roomId", authenticate, validate({ params: roomIdParamSchema }), roomController.getRoom)
 
-router.post("/:roomId/join", authenticate, roomController.joinRoom);
-router.post("/:roomId/leave", authenticate, roomController.leaveRoom);
+router.post("/:roomId/join", authenticate, validate({ params: roomIdParamSchema }), roomController.joinRoom);
+router.post("/:roomId/leave", authenticate, validate({ params: roomIdParamSchema }), roomController.leaveRoom);
 
 
 router.get(

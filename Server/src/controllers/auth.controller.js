@@ -24,4 +24,14 @@ const login = async (req, res, next) => {
         next(error);
     }
 }
-module.exports = { register, login }
+
+const refreshToken = async (req, res, next) => {
+    try {
+        const result = authService.refreshAccessToken(req.body.refreshToken);
+        return sendSuccessResponse(res, result, 200, "Token Refreshed");
+    }
+    catch (error) {
+        next(error);
+    }
+}
+module.exports = { register, login, refreshToken }

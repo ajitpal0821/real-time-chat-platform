@@ -8,6 +8,10 @@ const registerSchema = z.object({
 const loginSchema = z.object({
     email: z.string().trim().email().toLowerCase(),
     password: z.string().trim().min(6, { message: "Password must be at least 6 characters long" }).max(20, { message: "Password must be less than 20 characters long" }),
-})
+});
 
-module.exports = { registerSchema, loginSchema }
+const refreshTokenSchema = z.object({
+    refreshToken: z.string().min(1, { message: "Refresh Token is required" })
+}).strict();
+
+module.exports = { registerSchema, loginSchema, refreshTokenSchema }

@@ -22,13 +22,14 @@ const authenticate = (req, res, next) => {
         req.user = payload;
         next();
     } catch (error) {
-        return next(
-            new AppError(
-                "Invalid or expired token",
-                401,
-                "INVALID_TOKEN"
+        if (error.name === "TokenExpiredError") {
+            return next(new AppError("Token Expired!", 401, "TOKEN_EXPIRED"))
+        }
+        else {
+            return next(
+                new AppError("Invalid access toekn", 401, "INVALID_TOKEN")
             )
-        );
+        }
     }
 };
-module.exports=authenticate
+module.exports = authenticate

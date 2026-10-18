@@ -14,14 +14,16 @@ const {
 
 const validate = require("../middleware/validate.middleware");
 const { sendMessageSchema, updateMessageSchema } = require("../validations/message.validation");
+const { roomIdParamSchema, messageParamsSchema, paginationQuerySchema } = require("../validations/common.validation");
 
-router.post("/", authenticate, requireRoomMember,validate(sendMessageSchema), messageController.sendMessage);
-router.get("/", authenticate, requireRoomMember, messageController.getMessages);
-router.patch("/:messageId", authenticate, requireRoomMember, validate(updateMessageSchema),messageController.updateMessage);
+router.post("/", authenticate, validate({ params: roomIdParamSchema, body: sendMessageSchema }), requireRoomMember, messageController.sendMessage);
+router.get("/", authenticate, validate({ params: roomIdParamSchema, query: paginationQuerySchema }), requireRoomMember, messageController.getMessages);
+router.patch("/:messageId", authenticate, validate({ params: messageParamsSchema, body: updateMessageSchema }), requireRoomMember, messageController.updateMessage);
 
 router.delete(
     "/:messageId",
     authenticate,
+    validate({ params: messageParamsSchema }),
     requireRoomMember,
     messageController.deleteMessage
 );

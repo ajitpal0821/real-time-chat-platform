@@ -1,9 +1,10 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, DestroyRef, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
 import { RoomListComponent } from '../room-list/room-list.component';
 import { ChatStateServiceService } from '../../../core/services/chat-state-service.service';
 import { ChatService } from '../../../core/services/chat.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-chat-layout',
@@ -17,7 +18,7 @@ export class ChatLayoutComponent {
   private readonly chatService = inject(ChatService);
 
   private previousRoomId: string | null = null;
-
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly roomSyncEffect = effect(() => {
     const room = this.chatState.selectedRoom();
@@ -56,6 +57,15 @@ export class ChatLayoutComponent {
       }
       else {
         this.chatState.setUserOffline(userId);
+      }
+    });
+
+    this.chatService.onReconnect().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      const room = this.chatState.selectedRoom();
+      const roomIdRejoin = room ? (room._id || room.roomId) : null;
+      if (roomIdRejoin) {
+        console.log('Socket Reconnected:auto re-joining active room', roomIdRejoin);
+        this.chatService.joinRoom(roomIdRejoin).catch(err => { console.error('') })
       }
     })
   }

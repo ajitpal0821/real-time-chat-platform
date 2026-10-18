@@ -17,6 +17,10 @@ export class ChatService {
     return this.socketService.emitWithAck('leave_room', { roomId })
   }
 
+  onReconnect(): Observable<void> {
+    return this.socketService.onReconnect();
+  }
+
   onNewMessage(): Observable<Message> {
     return this.socketService.listen<Message>('new_message');
   }

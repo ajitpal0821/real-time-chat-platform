@@ -17,6 +17,8 @@ export class SocketService {
     if (this.socket?.connected) {
       return;
     }
+
+    // heck it token exits to prevent unnecessary connection attempts
     const token = this.tokenService.getAccessToken();
     if (!token) {
       console.error('Connot connect Socket.io access token missing');
@@ -24,7 +26,9 @@ export class SocketService {
     }
 
     this.socket = io(environment.socketUrl, {
-      transports: ['websocket'], auth: { token }
+      transports: ['websocket'], auth: (cb) => {
+        cb({ token: this.tokenService.getAccessToken() })
+      }
     });
     this.registerConnectionEvents();
   }
@@ -58,6 +62,10 @@ export class SocketService {
 
   isConnected(): boolean {
     return this.socket?.connected ?? false;
+  }
+
+  onReconnect(): Observable<void> {
+    return this.listen<void>('connect');
   }
 
   listen<T>(eventName: string): Observable<T> {
