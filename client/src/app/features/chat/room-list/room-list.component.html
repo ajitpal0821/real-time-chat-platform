@@ -17,61 +17,60 @@
     </div>
 
     <div class="header-actions">
-      <button
-        class="header-btn"
-        type="button"
-        aria-label="Join room"
-        title="Join an existing room by ID"
-        (click)="openJoinRoomDialog()"
-      >
+      <button class="header-btn" type="button" aria-label="Join room" title="Join an existing room by ID"
+        (click)="openJoinRoomDialog()">
         <mat-icon>login</mat-icon>
       </button>
 
-      <button
-        class="header-btn"
-        type="button"
-        aria-label="Create room"
-        title="Create a new room"
-        (click)="openCreateRoomDialog()"
-      >
+      <button class="header-btn" type="button" aria-label="Create room" title="Create a new room"
+        (click)="openCreateRoomDialog()">
         <mat-icon>add</mat-icon>
       </button>
     </div>
   </div>
 
   @if (loading && chatState.rooms().length === 0) {
-    <div class="state">
-      <span>Loading channels...</span>
-    </div>
+  <div class="state">
+    <span>Loading channels...</span>
+  </div>
   }
 
   @if (errorMessage && chatState.rooms().length === 0) {
-    <div class="state error">
-      <span>{{ errorMessage }}</span>
-    </div>
+  <div class="state error">
+    <span>{{ errorMessage }}</span>
+  </div>
   }
 
   @if (chatState.rooms().length > 0 || (!loading && !errorMessage)) {
-    <div class="rooms">
-      @for (room of chatState.rooms(); track room._id) {
-        <button
-          class="room-item"
-          type="button"
-          [class.selected]="isRoomSelected(room)"
-          (click)="selectRoom(room)"
-        >
-          <div class="room-icon-box">
-            <mat-icon>{{ room.isPrivate ? 'lock' : 'tag' }}</mat-icon>
-          </div>
-          <span class="room-name">{{ room.name }}</span>
-        </button>
-      }
+  <div class="rooms">
+    @for (room of chatState.rooms(); track room._id) {
+    <button class="room-item" type="button" [class.selected]="isRoomSelected(room)" (click)="selectRoom(room)">
+      <div class="room-icon-box">
+        <mat-icon>{{ room.isPrivate ? 'lock' : 'tag' }}</mat-icon>
+      </div>
+      <span class="room-name">{{ room.name }}</span>
+    </button>
+    }
 
-      @if (chatState.rooms().length === 0 && !loading && !errorMessage) {
-        <div class="state">
-          <span>No channels found.</span>
-        </div>
-      }
+    @if (chatState.rooms().length === 0 && !loading && !errorMessage) {
+    <div class="state">
+      <span>No channels found.</span>
     </div>
+    }
+  </div>
   }
+  <div class="sidebar-user-footer">
+    <div class="user-avatar-badge">
+      <span class="avatar-initial">{{ userInitial }}</span>
+      <span class="online-indicator"></span>
+    </div>
+    <div class="user-meta">
+      <span class="user-display-name">{{ currentUser?.name || 'User' }}</span>
+      <span class="user-email">{{ currentUser?.email || '' }}</span>
+    </div>
+    <button class="logout-icon-btn" type="button" title="Sign out of PulseChat" matTooltip="Sign out"
+      (click)="logout()">
+      <mat-icon>power_settings_new</mat-icon>
+    </button>
+  </div>
 </div>

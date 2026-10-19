@@ -1,11 +1,11 @@
-require("dotenv").config();
+const env = require("./config/env");
 const http = require("http");
 const mongoose = require("mongoose");
 const app = require('./app.js');
 const { initSocket } = require('./sockets');
 const { connectRedis, redisClient } = require('./config/redis.js');
 
-const PORT = process.env.PORT || 3000;
+const PORT = env.PORT || 3000;
 const connectDB = require('./config/database.js');
 
 const startServer = async () => {

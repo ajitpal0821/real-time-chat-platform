@@ -3,7 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-create-room-dialog',
@@ -13,7 +15,9 @@ import { MatInputModule } from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule,
+    MatSlideToggleModule
   ],
   templateUrl: './create-room-dialog.component.html',
   styleUrl: './create-room-dialog.component.scss'
@@ -24,7 +28,8 @@ export class CreateRoomDialogComponent {
     MatDialogRef<CreateRoomDialogComponent>
   );
   roomForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]]
+    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(20)]],
+    isPrivate: [false]
   });
 
   cancel(): void {
@@ -36,8 +41,7 @@ export class CreateRoomDialogComponent {
       return;
     }
 
-    this.dialogRef.close({
-      name: this.roomForm.getRawValue().name
-    })
+    const { name, isPrivate } = this.roomForm.getRawValue();
+    this.dialogRef.close({ name, isPrivate });
   }
 }

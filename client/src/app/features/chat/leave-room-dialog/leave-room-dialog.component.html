@@ -1,0 +1,41 @@
+<div class="confirm-dialog">
+  <div class="dialog-header">
+    <div class="header-icon-box">
+      <mat-icon>logout</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2 mat-dialog-title class="dialog-title">Leave Channel</h2>
+      <p class="dialog-subtitle">Confirm your departure from this channel</p>
+    </div>
+  </div>
+
+  <mat-dialog-content class="dialog-content-area">
+    <p class="confirm-message">
+      Are you sure you want to leave <strong>#{{ data.name }}</strong>?
+    </p>
+
+    @if (data.isPrivate) {
+      <div class="warning-callout">
+        <mat-icon class="warning-icon">lock</mat-icon>
+        <div class="warning-text">
+          <strong>Private Channel Warning:</strong>
+          <span>Because this is a private channel, you will need a direct invitation from the room owner to rejoin.</span>
+        </div>
+      </div>
+    } @else {
+      <p class="sub-message">
+        You can rejoin this channel at any time using the Channel ID or from the public channels list.
+      </p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-footer">
+    <button mat-button class="btn-cancel" type="button" (click)="cancel()">
+      Cancel
+    </button>
+    <button mat-flat-button class="btn-confirm-leave" type="button" (click)="confirm()">
+      <mat-icon>exit_to_app</mat-icon>
+      Leave Channel
+    </button>
+  </mat-dialog-actions>
+</div>

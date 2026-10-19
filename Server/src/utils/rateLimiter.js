@@ -3,6 +3,9 @@ const { redisClient } = require("../config/redis.js");
 const rateLimiter = ({ keyPrefix, limit, windowSeconds }) => {
     return async (req, res, next) => {
         try {
+            if (process.env.NODE_ENV === 'test') {
+                return next();
+            }
             const identifier = req.ip || req.socket.remoteAddress;
 
             const key = `${keyPrefix}:${identifier}`;

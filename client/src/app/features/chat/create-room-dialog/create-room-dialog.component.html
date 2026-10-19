@@ -1,46 +1,71 @@
-<h2 mat-dialog-title>Create New Room</h2>
+<div class="modal-dialog">
+  <div class="dialog-header">
+    <div class="header-icon-box">
+      <mat-icon>add_circle_outline</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2 mat-dialog-title class="dialog-title">Create Channel</h2>
+      <p class="dialog-subtitle">Set up a space for team conversations or private chats</p>
+    </div>
+  </div>
 
-<mat-dialog-content>
-
+  <mat-dialog-content class="dialog-content-area">
     <form [formGroup]="roomForm" (ngSubmit)="create()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Channel Name</mat-label>
+        <mat-icon matPrefix class="input-prefix-icon">forum</mat-icon>
+        <input
+          matInput
+          formControlName="name"
+          placeholder="e.g. general, announcements"
+          autocomplete="off"
+        />
 
-        <mat-form-field appearance="outline">
-            <mat-label>Room name</mat-label>
+        @if (roomForm.controls.name.hasError('required')) {
+          <mat-error>Channel name is required</mat-error>
+        }
+        @if (roomForm.controls.name.hasError('minlength')) {
+          <mat-error>Channel name must be at least 2 characters</mat-error>
+        }
+        @if (roomForm.controls.name.hasError('maxlength')) {
+          <mat-error>Channel name cannot exceed 20 characters</mat-error>
+        }
+      </mat-form-field>
 
-            <input matInput formControlName="name" placeholder="Enter room name" autocomplete="off" />
-
-            @if (roomForm.controls.name.hasError('required')) {
-            <mat-error>
-                Room name is required
-            </mat-error>
-            }
-
-            @if (roomForm.controls.name.hasError('minlength')) {
-            <mat-error>
-                Room name must be at least 2 characters
-            </mat-error>
-            }
-
-            @if (roomForm.controls.name.hasError('maxlength')) {
-            <mat-error>
-                Room name cannot exceed 100 characters
-            </mat-error>
-            }
-
-        </mat-form-field>
-
+      <!-- Public / Private Toggle Card -->
+      <div class="privacy-container" [class.is-private]="roomForm.controls.isPrivate.value">
+        <mat-slide-toggle formControlName="isPrivate" color="primary">
+          <div class="toggle-header">
+            <mat-icon class="toggle-icon">
+              {{ roomForm.controls.isPrivate.value ? 'lock' : 'public' }}
+            </mat-icon>
+            <span class="toggle-title">
+              {{ roomForm.controls.isPrivate.value ? 'Private Channel' : 'Public Channel' }}
+            </span>
+          </div>
+        </mat-slide-toggle>
+        <p class="privacy-description">
+          {{ roomForm.controls.isPrivate.value
+            ? '🔒 Only members with an invitation can join this channel.'
+            : '🌐 Anyone on PulseChat can discover and join this channel.' }}
+        </p>
+      </div>
     </form>
+  </mat-dialog-content>
 
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-
-    <button mat-button type="button" (click)="cancel()">
-        Cancel
+  <mat-dialog-actions align="end" class="dialog-footer">
+    <button mat-button class="btn-cancel" type="button" (click)="cancel()">
+      Cancel
     </button>
-
-    <button mat-flat-button type="button" (click)="create()" [disabled]="roomForm.invalid">
-        Create
+    <button
+      mat-flat-button
+      class="btn-primary-action"
+      type="button"
+      (click)="create()"
+      [disabled]="roomForm.invalid"
+    >
+      <mat-icon>check</mat-icon>
+      Create Channel
     </button>
-
-</mat-dialog-actions>
+  </mat-dialog-actions>
+</div>

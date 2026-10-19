@@ -13,10 +13,10 @@ const userSchema = new mongoose.Schema(
             lowercase: true,
             trim: true
         },
-        passwordHash:{
-            type:String,
-            required:true,
-            select:false
+        passwordHash: {
+            type: String,
+            required: true,
+            select: false
         },
 
         status: {
@@ -33,5 +33,13 @@ const userSchema = new mongoose.Schema(
         timestamps: true
     }
 );
+
+userSchema.set('toJSON', {
+    transform: (_doc, ret) => {
+        delete ret.passwordHash;
+        delete ret.__v;
+        return ret;
+    },
+});
 const User = mongoose.model("User", userSchema);
 module.exports = User;

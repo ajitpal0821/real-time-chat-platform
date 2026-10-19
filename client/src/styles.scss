@@ -76,3 +76,43 @@ html, body {
     --mdc-snackbar-supporting-text-color: #fecdd3;
   }
 }
+
+/* Material Dialog Modern Surface */
+.mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    background-color: var(--bg-surface, #0f121b) !important;
+    border: 1px solid var(--border-subtle, #1e2436) !important;
+    border-radius: var(--radius-lg, 18px) !important;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+}
+
+/* Material Outline Form Fields (Fix Label Overlap & Dark Theme Contrast) */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 10px;
+  --mdc-outlined-text-field-outline-color: var(--border-subtle, #1e2436);
+  --mdc-outlined-text-field-hover-outline-color: var(--border-active, #3b4566);
+  --mdc-outlined-text-field-focus-outline-color: var(--accent-primary, #6366f1);
+  --mdc-outlined-text-field-label-text-color: var(--text-muted, #64748b);
+  --mdc-outlined-text-field-focus-label-text-color: var(--accent-primary, #6366f1);
+  --mdc-outlined-text-field-input-text-color: var(--text-primary, #f8fafc);
+  --mdc-outlined-text-field-input-text-placeholder-color: var(--text-muted, #64748b);
+
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--bg-input, #0b0d14);
+    border-radius: 10px;
+  }
+}
+
+/* Material Slide Toggle Modern Theme */
+.mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: var(--accent-primary, #6366f1);
+  --mdc-switch-selected-handle-color: #ffffff;
+  --mdc-switch-selected-focus-handle-color: #ffffff;
+  --mdc-switch-selected-hover-handle-color: #ffffff;
+  --mdc-switch-selected-pressed-handle-color: #ffffff;
+  --mdc-switch-unselected-track-color: var(--border-subtle, #1e2436);
+  --mdc-switch-unselected-handle-color: var(--text-muted, #64748b);
+}

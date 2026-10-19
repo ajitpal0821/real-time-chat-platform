@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-join-room-dialog',
@@ -13,7 +14,8 @@ import { MatInputModule } from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './join-room-dialog.component.html',
   styleUrl: './join-room-dialog.component.scss'
@@ -23,7 +25,13 @@ export class JoinRoomDialogComponent {
   readonly dialogRef = inject(MatDialogRef<JoinRoomDialogComponent>);
 
   joinForm = this.fb.nonNullable.group({
-    roomId: ['', [Validators.required, Validators.minLength(1)]]
+    roomId: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^[0-9a-fA-F]{24}$/)
+      ]
+    ]
   });
 
   cancel(): void {

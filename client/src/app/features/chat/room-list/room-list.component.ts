@@ -9,6 +9,9 @@ import { Room } from '../../../core/models/room.model';
 import { ChatStateServiceService } from '../../../core/services/chat-state-service.service';
 import { CreateRoomDialogComponent } from '../create-room-dialog/create-room-dialog.component';
 import { JoinRoomDialogComponent } from '../join-room-dialog/join-room-dialog.component';
+import { LogoutConfirmationDialogComponent } from '../logout-confirmation-dialog/logout-confirmation-dialog.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { TokenService } from '../../../core/services/token.service';
 
 @Component({
   selector: 'app-room-list',
@@ -19,7 +22,8 @@ import { JoinRoomDialogComponent } from '../join-room-dialog/join-room-dialog.co
     MatIconModule,
     MatSnackBarModule,
     CreateRoomDialogComponent,
-    JoinRoomDialogComponent
+    JoinRoomDialogComponent,
+    LogoutConfirmationDialogComponent
   ],
   templateUrl: './room-list.component.html',
   styleUrl: './room-list.component.scss'
@@ -29,9 +33,30 @@ export class RoomListComponent implements OnInit {
   private readonly roomService = inject(RoomService);
   readonly chatState = inject(ChatStateServiceService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly authService = inject(AuthService);
+  private readonly tokenService = inject(TokenService);
 
   loading = false;
   errorMessage = '';
+  get currentUser() {
+    return this.tokenService.getUser();
+  }
+  get userInitial(): string {
+    const name = this.currentUser?.name;
+    return name ? name.charAt(0).toUpperCase() : 'U';
+  }
+
+  logout(): void {
+    const dialogRef = this.dialog.open(LogoutConfirmationDialogComponent, {
+      width: '420px'
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.authService.logout();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadRooms();
@@ -100,7 +125,7 @@ export class RoomListComponent implements OnInit {
       if (!data?.name) {
         return;
       }
-      this.createRoom(data.name);
+      this.createRoom(data.name, data.isPrivate);
     });
   }
 
@@ -117,8 +142,8 @@ export class RoomListComponent implements OnInit {
     });
   }
 
-  private createRoom(name: string): void {
-    this.roomService.createRoom({ name }).subscribe({
+  private createRoom(name: string, isPrivate: boolean = false): void {
+    this.roomService.createRoom({ name, isPrivate }).subscribe({
       next: (room) => {
         this.showSuccessSnackBar(`Room "${room.name}" created successfully!`);
         this.chatState.addRoom(room);
@@ -142,12 +167,26 @@ export class RoomListComponent implements OnInit {
         this.loadRooms(roomId);
       },
       error: (error) => {
-        console.error('Failed to join room', error);
-        const msg =
-          error?.error?.response?.message ||
-          error?.error?.message ||
-          'Failed to join room. Please check the Room ID.';
-        this.showErrorSnackBar(msg);
+        console.error('[RoomList] Failed to join room:', error);
+
+        const apiError = error?.error?.error?.message;
+        const validationDetail = error?.error?.errors?.[0]?.message;
+        const responseMsg = error?.error?.response?.message;
+        const rootMsg = error?.error?.message;
+
+        let displayMsg = 'Failed to join channel. Please check the Channel ID.';
+
+        if (apiError) {
+          displayMsg = apiError;
+        } else if (validationDetail) {
+          displayMsg = 'Invalid Channel ID format. Please verify the 24-character code.';
+        } else if (responseMsg) {
+          displayMsg = responseMsg;
+        } else if (rootMsg && rootMsg !== 'validation failed') {
+          displayMsg = rootMsg;
+        }
+
+        this.showErrorSnackBar(displayMsg);
       }
     });
   }

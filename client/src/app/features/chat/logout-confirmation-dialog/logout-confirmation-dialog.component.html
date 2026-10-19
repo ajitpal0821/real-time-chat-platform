@@ -1,0 +1,27 @@
+<div class="confirm-dialog">
+  <div class="dialog-header">
+    <div class="header-icon-box">
+      <mat-icon>power_settings_new</mat-icon>
+    </div>
+    <div>
+      <h2 mat-dialog-title class="dialog-title">Sign Out</h2>
+      <p class="dialog-subtitle">Are you sure you want to exit?</p>
+    </div>
+  </div>
+
+  <mat-dialog-content class="dialog-content-area">
+    <p class="confirm-message">
+      You are about to sign out of <strong>PulseChat</strong>. You will need to log in again to access your channels and real-time messages.
+    </p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-footer">
+    <button mat-button class="btn-cancel" type="button" (click)="cancel()">
+      Cancel
+    </button>
+    <button mat-flat-button class="btn-confirm-logout" type="button" (click)="confirm()">
+      <mat-icon>logout</mat-icon>
+      Sign Out
+    </button>
+  </mat-dialog-actions>
+</div>

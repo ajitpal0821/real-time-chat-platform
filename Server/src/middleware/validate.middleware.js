@@ -14,8 +14,11 @@ const validate = (schemaOrConfig, target = "body") => {
                 const result = schemaOrConfig[part].safeParse(req[part]);
                 if (!result.success) {
                     result.error.issues.forEach((issue) => {
+                        const fieldName = issue.path.length
+                            ? issue.path.join(".")
+                            : (issue.keys && issue.keys.length ? issue.keys.join(", ") : "");
                         errors.push({
-                            field: `${part}.${issue.path.join(".")}`,
+                            field: fieldName ? `${part}.${fieldName}` : part,
                             message: issue.message
                         });
                     });
@@ -57,7 +60,9 @@ const validate = (schemaOrConfig, target = "body") => {
                 success: false,
                 message: "validation failed",
                 errors: result.error.issues.map((issue) => ({
-                    field: issue.path.join("."),
+                    field: issue.path.length
+                        ? issue.path.join(".")
+                        : (issue.keys && issue.keys.length ? issue.keys.join(", ") : ""),
                     message: issue.message
                 }))
             });

@@ -1,29 +1,48 @@
-<h2 mat-dialog-title>Join Room</h2>
+<div class="modal-dialog">
+  <div class="dialog-header">
+    <div class="header-icon-box">
+      <mat-icon>login</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2 mat-dialog-title class="dialog-title">Join Channel</h2>
+      <p class="dialog-subtitle">Enter an existing channel ID to connect</p>
+    </div>
+  </div>
 
-<mat-dialog-content>
-  <form [formGroup]="joinForm" (ngSubmit)="join()">
-    <mat-form-field appearance="outline">
-      <mat-label>Room ID</mat-label>
-      <input
-        matInput
-        formControlName="roomId"
-        placeholder="Enter room ID or code"
-        autocomplete="off"
-      />
-      @if (joinForm.controls.roomId.hasError('required') && joinForm.controls.roomId.touched) {
-        <mat-error>
-          Room ID is required
-        </mat-error>
-      }
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
+  <mat-dialog-content class="dialog-content-area">
+    <form [formGroup]="joinForm" (ngSubmit)="join()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Channel ID</mat-label>
+        <mat-icon matPrefix class="input-prefix-icon">tag</mat-icon>
+        <input
+          matInput
+          formControlName="roomId"
+          placeholder="e.g. 660f1f77bcf86cd799439011"
+          autocomplete="off"
+        />
+        @if (joinForm.controls.roomId.hasError('required') && joinForm.controls.roomId.touched) {
+          <mat-error>Channel ID is required</mat-error>
+        }
+        @if (joinForm.controls.roomId.hasError('pattern') && joinForm.controls.roomId.touched) {
+          <mat-error>Channel ID must be a valid 24-character code</mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="cancel()">
-    Cancel
-  </button>
-  <button mat-flat-button color="primary" type="button" (click)="join()" [disabled]="joinForm.invalid">
-    Join
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions align="end" class="dialog-footer">
+    <button mat-button class="btn-cancel" type="button" (click)="cancel()">
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      class="btn-primary-action"
+      type="button"
+      (click)="join()"
+      [disabled]="joinForm.invalid"
+    >
+      <mat-icon>group_add</mat-icon>
+      Join Channel
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -31,16 +31,19 @@ const globalLimiter = rateLimit({
     legacyHeaders: false,
 
 })
-app.use('/api', globalLimiter);
+// app.use('/api', globalLimiter);
 
 
 const authLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    max: 10,
+    max: 100,
     message: "Too many attempts from this IP, please try again after 1 hour",
 
 })
-app.use('/api/auth', authLimiter);
+if (process.env.NODE_ENV !== 'test') {
+    app.use('/api', globalLimiter);
+    app.use('/api/auth', authLimiter);
+}
 app.use(express.json({ limit: '10kb' }));
 
 

@@ -15,7 +15,10 @@ const register = async ({ name, email, password }) => {
 
     const passwordHash = await hashPassword(password);
     const user = await authRepository.createUser({ name, email, passwordHash });
-    return user;
+    // return user;
+    const userObject = user.toObject ? user.toObject() : user;
+    delete userObject.passwordHash;
+    return userObject;
 };
 
 const login = async ({ email, password }) => {

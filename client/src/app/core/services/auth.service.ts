@@ -36,6 +36,6 @@ export class AuthService {
   logout() {
     this.tokenService.clearTokens();
     this.socketService.disconnect();
-    this.router.navigate(['/auth/login'])
+    this.router.navigate(['/login'])
   }
 }
