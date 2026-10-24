@@ -1,0 +1,145 @@
+name: PulseChat CI/CD Pipeline
+
+# =============================================================================
+# 1. TRIGGERS: When does this workflow run?
+# =============================================================================
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+
+# Cancel previous in-progress runs on the same branch when new commits are pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# =============================================================================
+# 2. JOBS: What tasks should run?
+# =============================================================================
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # JOB 1: Security Audit & Dependency Vulnerability Scan
+  # ---------------------------------------------------------------------------
+  security-audit:
+    name: Security & Dependency Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Audit Backend Dependencies
+        run: |
+          cd Server
+          npm audit --audit-level=high || true
+
+      - name: Audit Client Dependencies
+        run: |
+          cd client
+          npm audit --audit-level=high || true
+
+  # ---------------------------------------------------------------------------
+  # JOB 2: Backend Automated Integration Tests (Jest + In-Memory Mongo + Redis)
+  # ---------------------------------------------------------------------------
+  backend-tests:
+    name: Backend Test Suite (74 Tests)
+    runs-on: ubuntu-latest
+
+    # Service Container: Spins up a real Redis container for Socket.IO tests
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: Server/package-lock.json
+
+      - name: Install Server Dependencies
+        run: |
+          cd Server
+          npm ci
+
+      - name: Run Backend Integration Tests (Jest)
+        env:
+          NODE_ENV: test
+          PORT: 3001
+          REDIS_URL: redis://localhost:6379
+          JWT_ACCESS_SECRET: github_actions_ci_jwt_access_secret_12345
+          JWT_REFRESH_SECRET: github_actions_ci_jwt_refresh_secret_12345
+          CLIENT_URL: http://localhost:4200
+        run: |
+          cd Server
+          npm test
+
+  # ---------------------------------------------------------------------------
+  # JOB 3: Frontend Angular 18 Build & Typecheck
+  # ---------------------------------------------------------------------------
+  client-build:
+    name: Client Build & Compilation Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Client Dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Compile Angular Application (Production Build)
+        run: |
+          cd client
+          npm run build
+
+  # ---------------------------------------------------------------------------
+  # JOB 4: Docker Container Validation (Runs only if tests & client build pass)
+  # ---------------------------------------------------------------------------
+  docker-build:
+    name: Docker Production Image Build
+    needs: [backend-tests, client-build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Server Production Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Server
+          file: ./Server/Dockerfile
+          push: false # Only verifies the image builds successfully without pushing
+          tags: pulsechat-server:ci-${{ github.sha }}
