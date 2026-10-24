@@ -1,3 +1,6 @@
+[![CI Pipeline](https://github.com/ajitpal0821/real-time-chat-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ajitpal0821/real-time-chat-platform/actions/workflows/ci.yml)
+
+
 <!-- # PulseChat — Real-Time Scalable Chat Platform
 
 [![Angular](https://img.shields.io/badge/Angular-18+-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
