@@ -155,7 +155,7 @@ describe('Stage 5: Socket.IO Real-Time Integration Suite', () => {
         const roomARes = await request(app)
             .post('/api/rooms')
             .set('Authorization', `Bearer ${tokenA}`)
-            .send({ name: 'Alpha Channel', isPrivate: true });
+            .send({ name: 'Alpha Channel', isPrivate: false });
         roomAId = roomARes.body.response.data._id;
 
         await request(app)
