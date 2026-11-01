@@ -25,18 +25,23 @@ PulseChat is an enterprise-grade real-time chat platform designed for high concu
 ---
 
 ## Screenshots
+<img width="1598" height="868" alt="image" src="https://github.com/user-attachments/assets/e2995ab5-35b1-4b00-9914-2ddc96ff3205" />
 
 <!-- Add your screenshots below by placing images in your repository (e.g., in a /screenshots folder) -->
 
 | Main Interface | Channels & Member Directory |
 | :---: | :---: |
-| ![Main Interface](https://via.placeholder.com/640x400/f5f5f7/1d1d1f?text=Main+Chat+Interface) | ![Channels and Members](https://via.placeholder.com/640x400/f5f5f7/1d1d1f?text=Channels+%26+Members) |
+| ![Main Interface](<img width="1917" height="907" alt="image" src="https://github.com/user-attachments/assets/17037d52-3429-45c0-8e07-bfe33fc03e07" />
+) | ![Channels and Members](<img width="323" height="895" alt="image" src="https://github.com/user-attachments/assets/901aca67-a504-4c28-8954-b303b7d928cd" />
+) |
 
 | Real-Time Messaging & Actions | Responsive Mobile View |
 | :---: | :---: |
-| ![Real-Time Messaging](https://via.placeholder.com/640x400/f5f5f7/1d1d1f?text=Message+Actions+%26+Typing) | ![Mobile View](https://via.placeholder.com/640x400/f5f5f7/1d1d1f?text=Mobile+Responsive+View) |
+| ![Real-Time Messaging](<img width="953" height="901" alt="image" src="https://github.com/user-attachments/assets/de2401fd-fbab-49c9-b6e6-cac5945095c4" />
+) | ![Mobile View](<img width="872" height="638" alt="image" src="https://github.com/user-attachments/assets/bccaffef-d088-40af-b7c1-029ca0010263" />
+) |
 
-*Replace the placeholder image sources with your local or hosted asset paths (e.g. `./screenshots/chat-desktop.png`).*
+
 
 ---
 
