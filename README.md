@@ -31,15 +31,12 @@ PulseChat is an enterprise-grade real-time chat platform designed for high concu
 
 | Main Interface | Channels & Member Directory |
 | :---: | :---: |
-| ![Main Interface](<img width="1917" height="907" alt="image" src="https://github.com/user-attachments/assets/17037d52-3429-45c0-8e07-bfe33fc03e07" />
-) | ![Channels and Members](<img width="323" height="895" alt="image" src="https://github.com/user-attachments/assets/901aca67-a504-4c28-8954-b303b7d928cd" />
-) |
+| ![Main Interface](https://github.com/user-attachments/assets/17037d52-3429-45c0-8e07-bfe33fc03e07) | ![Channels and Members](https://github.com/user-attachments/assets/901aca67-a504-4c28-8954-b303b7d928cd) |
 
 | Real-Time Messaging & Actions | Responsive Mobile View |
 | :---: | :---: |
-| ![Real-Time Messaging](<img width="953" height="901" alt="image" src="https://github.com/user-attachments/assets/de2401fd-fbab-49c9-b6e6-cac5945095c4" />
-) | ![Mobile View](<img width="872" height="638" alt="image" src="https://github.com/user-attachments/assets/bccaffef-d088-40af-b7c1-029ca0010263" />
-) |
+| ![Real-Time Messaging](https://github.com/user-attachments/assets/de2401fd-fbab-49c9-b6e6-cac5945095c4) | ![Mobile View](https://github.com/user-attachments/assets/bccaffef-d088-40af-b7c1-029ca0010263) |
+
 
 
 
