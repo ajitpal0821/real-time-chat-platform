@@ -1,8 +1,6 @@
+# PulseChat — Real-Time Scalable Chat Platform
+
 [![CI Pipeline](https://github.com/ajitpal0821/real-time-chat-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ajitpal0821/real-time-chat-platform/actions/workflows/ci.yml)
-
-
-<!-- # PulseChat — Real-Time Scalable Chat Platform
-
 [![Angular](https://img.shields.io/badge/Angular-18+-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-5.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
@@ -10,39 +8,93 @@
 [![Redis](https://img.shields.io/badge/Redis-7+-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-
-A production-grade, distributed real-time chat platform engineered with **Angular 18+ (Signals & Material Design)**, **Node.js/Express**, **Socket.IO**, **Redis**, and **MongoDB Atlas**. Designed for high throughput, horizontal scalability via Redis Pub/Sub, and seamless real-time user experiences.
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 ---
 
-## 📑 Table of Contents
+## 📌 What is PulseChat?
 
-- [System Architecture](#-system-architecture)
-- [Key Features](#-key-features)
-  - [Frontend Highlights](#frontend-highlights-angular-18)
-  - [Backend Highlights](#backend-highlights-nodejs--socketio)
-- [Technical Highlights & Engineering Solutions](#-technical-highlights--engineering-solutions)
-  - [1. Bidirectional Scrolling & Cursor Pagination](#1-bidirectional-scrolling--cursor-pagination)
-  - [2. Multi-Tab User Presence (Redis Sets)](#2-multi-tab-user-presence-redis-sets)
-  - [3. Horizontal Socket.IO Scaling (Redis Adapter)](#3-horizontal-socketio-scaling-redis-adapter)
-  - [4. Real-Time Debounced Typing Indicators](#4-real-time-debounced-typing-indicators)
-- [Repository Structure](#-repository-structure)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Environment Configuration](#environment-configuration)
-  - [Running with Docker Compose](#running-with-docker-compose)
-  - [Running Locally for Development](#running-locally-for-development)
-- [API & Socket Reference](#-api--socket-reference)
+**PulseChat** is a production-grade, distributed real-time chat platform built with **Angular 18+** on the frontend and **Node.js/Express 5** on the backend. It leverages **Socket.IO** and **Redis Pub/Sub** for horizontally scalable, low-latency messaging, backed by **MongoDB Atlas** for persistent storage.
+
+The platform follows a **hybrid communication model**:
+- **HTTP REST APIs**: Used for resource-heavy queries, user authentication, channel management, and cursor-based message history.
+- **WebSockets (Socket.IO)**: Used for instantaneous two-way event communication, live message updates/deletions, real-time typing indicators, and online presence tracking.
+- **Redis Cluster Adapter**: Enables horizontal scaling across multiple backend instances behind load balancers without losing socket room state or user sessions.
+
+---
+
+## 📸 Screenshots
+
+<!-- ================================================================= -->
+<!-- SCREENSHOT PLACEHOLDER SECTION: Insert your screenshot links below -->
+<!-- Tip: Place your images in a folder like `screenshots/` or `assets/`  -->
+<!-- ================================================================= -->
+
+| 💬 Main Chat Interface | 👥 Channel & Member List |
+| :---: | :---: |
+| ![Chat Interface Placeholder](https://via.placeholder.com/600x380/1e293b/ffffff?text=Main+Chat+Interface+Screenshot) | ![Channel List Placeholder](https://via.placeholder.com/600x380/1e293b/ffffff?text=Room+%26+Members+Dialog+Screenshot) |
+
+| ✍️ Live Typing & Message Actions | 📱 Responsive / Mobile View |
+| :---: | :---: |
+| ![Message Actions Placeholder](https://via.placeholder.com/600x380/1e293b/ffffff?text=Message+Actions+%26+Typing+Screenshot) | ![Mobile View Placeholder](https://via.placeholder.com/600x380/1e293b/ffffff?text=Mobile+View+Screenshot) |
+
+> 💡 *To display your own screenshots, replace the image URLs above with your file paths (e.g., `./screenshots/chat-main.png`).*
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- **Framework**: Angular 18+ (Standalone Components, Signals & Reactive State)
+- **UI Components & Icons**: Angular Material 18 & CDK
+- **Styling**: SCSS with custom dark-mode glassmorphic theme
+- **State & Stream Orchestration**: Angular Signals (`signal`, `computed`, `effect`) & RxJS
+- **WebSocket Client**: `socket.io-client` (v4.8+)
+
+### Backend
+- **Runtime & Framework**: Node.js 20+ & Express.js 5.x
+- **Real-Time Communication**: Socket.IO 4.x
+- **Pub/Sub & Distributed State**: Redis 7 with `@socket.io/redis-adapter`
+- **Database & ODM**: MongoDB Atlas & Mongoose 8.x
+- **Authentication**: JWT (JSON Web Tokens) with dual-token strategy (Access & Refresh tokens) + `bcrypt` password hashing
+- **Input Validation**: Zod schema validation
+- **Security Middlewares**: Helmet, CORS, Express Rate Limit, Express Mongo Sanitize (NoSQL injection defense)
+
+### DevOps & Tooling
+- **Containerization**: Docker & Docker Compose (Multi-stage Node.js Alpine builds)
+- **CI/CD**: GitHub Actions (Linting, security vulnerability audit, container build checks)
+- **Testing**: Jest, Supertest, Mongo Memory Server, Jasmine & Karma
+
+---
+
+## ✨ Features
+
+### ⚡ Real-Time Messaging & State Sync
+- **Bidirectional Instant Messaging**: Sub-millisecond message delivery across active channels using Socket.IO.
+- **Message Editing & Deletion**: Real-time content mutations broadcasted to all connected peers in the channel without page refresh.
+- **Real-Time Debounced Typing Indicators**: Broadcasts active typing state (`typing_start` / `typing_stop`) with a 2-second client-side debounce to prevent network congestion.
+
+### 🌐 Presence & Multi-Tab Tracking
+- **Multi-Tab Presence Engine**: Powered by Redis Sets (`SADD` / `SREM`). A user can have multiple browser tabs open; their status transitions to offline only when their last active socket disconnects.
+- **Auto-Expiring Heartbeats**: Redis TTLs (60s) ensure clean presence teardown even during abrupt network drops or client crashes.
+- **Live Member Presence**: Active green/gray status indicators update dynamically across channel member lists.
+
+### 📜 Smart Chat History & Scrolling
+- **Cursor-Based Pagination**: Fetches message history with `before=<timestamp>` to prevent duplicate or missing records during high-traffic chat streams.
+- **Flicker-Free Bidirectional Infinite Scroll**: Angular Signals dynamically compensate scroll offsets when prepending older messages, preventing viewport jumps.
+- **Smart Auto-Scroll**: Automatically scrolls down for incoming messages if the user is already near the bottom; presents a *"New messages below"* floating badge when reviewing past messages.
+
+### 🛡 Rooms & Access Control
+- **Channel Management**: Create public and private channels, join/leave rooms, and view active channel members.
+- **Role-Aware Security**: Ensures sockets can only receive broadcasts from channels they are verified members of.
+
+### 🔒 Enterprise-Grade Security
+- **Dual-Token Authentication**: 15-minute access tokens and 7-day refresh tokens; socket connection handshake validates JWT tokens on connect.
+- **Defense in Depth**: Express 5 rate-limiting on authentication and API routes, Helmet HTTP headers, NoSQL query injection sanitization, and strict Zod payload validation.
 
 ---
 
 ## 🏛 System Architecture
-
-The platform uses a **hybrid dual-channel communication model**:
-* **HTTP REST**: Dedicated to historical queries, authentication, cursor-based pagination, and room management.
-* **WebSockets (Socket.IO)**: Dedicated to low-latency bi-directional messaging, live message mutations (edits/deletions), typing events, and presence heartbeats.
-* **Redis Pub/Sub**: Enables horizontal clustering across multiple Node.js instances behind load balancers.
 
 ```text
                                +------------------------+
@@ -52,7 +104,7 @@ The platform uses a **hybrid dual-channel communication model**:
                                            |
                     +----------------------+----------------------+
                     |                                             |
-            HTTP REST (JSON)                               WebSocket (TCP)
+             HTTP REST (JSON)                               WebSocket (TCP)
                     |                                             |
                     v                                             v
         +-----------------------+                     +-----------------------+
@@ -79,128 +131,28 @@ The platform uses a **hybrid dual-channel communication model**:
 
 ---
 
-## ✨ Key Features
+## 🚀 Getting Started
 
-### Frontend Highlights (Angular 18)
-* **Reactive Signal Architecture:** High-performance, fine-grained reactivity using Angular Signals (`signal`, `computed`, `effect`) for state management (`ChatStateService`, `MessageStateService`).
-* **Bidirectional Infinite Scroll:** Seamless cursor-based pagination (`before=<timestamp>`) prepends historical messages without viewport jump or flickering.
-* **Smart Auto-Scroll & Floating Pill:** Automatically scrolls to the bottom on self-sent messages and live updates when near the bottom; presents a floating *"X new messages ↓"* badge when reading older history.
-* **Real-Time Synchronized CRUD:** Sending, editing, and deleting messages reflect across all connected clients in that channel with zero page reloads.
-* **Live Debounced Typing Indicators:** Visual typing waves (`Someone is typing...`) throttled on the client side with 2-second debounce timers to prevent socket flooding.
-* **Online/Offline Member Presence:** Real-time green/gray status dots in the channel members dialog driven by live socket presence events.
-* **Modern Material UI & PulseChat Theme:** Dark-mode glassmorphism, responsive navigation sidebar, channel search, and accessible modal dialogs.
-
-### Backend Highlights (Node.js & Socket.IO)
-* **Layered Clean Architecture:** Strict separation across `Routes ➔ Middlewares ➔ Controllers ➔ Services ➔ Repositories ➔ Models`.
-* **JWT Authentication:** Dual-token strategy with short-lived Access Tokens (15m) and Refresh Tokens (7d), validated in HTTP headers and Socket.IO handshakes.
-* **Horizontal Scalability:** Integrated `@socket.io/redis-adapter` for multi-node deployments behind load balancers.
-* **Redis Multi-Tab Presence:** Multi-connection tracking using Redis Sets with 60s TTL and 30s heartbeat intervals.
-* **Containerized Deployment:** Multi-stage production `Dockerfile` (Node 20 Alpine) with non-root security context, health checks, and `docker-compose.yml`.
-* **Robust Security & Validation:** Zod request validation, rate limiting, bcrypt password hashing, and custom `AppError` centralized error handling.
+### Prerequisites
+- **Node.js**: `v20.x` or higher
+- **npm**: `v10.x` or higher
+- **Docker Desktop**: Recommended for local Redis service
+- **MongoDB Atlas** account (or local MongoDB `v7+`)
 
 ---
 
-## 🔬 Technical Highlights & Engineering Solutions
+### 1. Clone the Repository
 
-### 1. Bidirectional Scrolling & Cursor Pagination
-* **The Problem:** Prepending older messages increases the scroll container's `scrollHeight`. Without compensation, the viewport jumps to the top, triggering infinite scroll loops and disorienting the user. Furthermore, reactive signal updates can erroneously trigger bottom-scrolling during history reads.
-* **The Solution:**
-  1. Capture `previousScrollHeight` and `previousScrollTop` prior to state mutation.
-  2. Prepend messages to `MessageStateService`.
-  3. Compensate scroll position using `requestAnimationFrame`:
-     $$\text{scrollTop} = \text{previousScrollTop} + (\text{newScrollHeight} - \text{previousScrollHeight})$$
-  4. Track `prevLastMessageId` in Angular effects to differentiate *prepends* (history) from *appends* (new incoming messages).
-
-### 2. Multi-Tab User Presence (Redis Sets)
-* **The Multi-Tab Problem:** If a user has two tabs open and closes one, a simple boolean status (`isOnline: false`) would falsely mark them offline.
-* **The Solution:**
-  * Sockets register in Redis Sets: `SADD presence:<userId> <socket.id>`.
-  * When size transitions $0 \rightarrow 1$, emit `user_status_changed: online`.
-  * On disconnect: `SREM presence:<userId> <socket.id>`. When cardinality reaches $0$, emit `user_status_changed: offline`.
-  * Auto-expiring TTLs (60s) prevent ghost online states in the event of abrupt client crashes or connection drops.
-
-### 3. Horizontal Socket.IO Scaling (Redis Adapter)
-* The Socket.IO Redis adapter forwards room broadcasts between different server instances via Redis Pub/Sub channels. When User A connected to Instance 1 sends a message to `#general`, Instance 2 receives the Redis broadcast and emits it to User B connected to Instance 2.
-
-### 4. Real-Time Debounced Typing Indicators
-* Keystrokes invoke `typing_start` only once (`isTyping = true`), while resetting a 2000ms debounce timer.
-* When typing pauses or the message is sent, `typing_stop` fires, clearing the indicator across peer clients and eliminating unnecessary socket traffic.
-
----
-
-## 📂 Repository Structure
-
-```text
-real-time-chat-platform/
-├── client/                               # Angular 18 Single Page Application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── core/                     # Core Singleton Services, Guards & Interceptors
-│   │   │   │   ├── guards/               # Auth Guards
-│   │   │   │   ├── interceptors/         # JWT Bearer Token HTTP Interceptor
-│   │   │   │   ├── models/               # TypeScript Interfaces (User, Room, Message)
-│   │   │   │   └── services/             # ChatService, SocketService, TokenService, State Services
-│   │   │   ├── features/                 # Modular Feature Components
-│   │   │   │   ├── auth/                 # Login & Registration Components
-│   │   │   │   └── chat/                 # ChatLayout, RoomList, ChatWindow, MessageList, MessageInput
-│   │   │   └── shared/                   # Shared UI Components & Modals
-│   │   └── environment/                  # Environment Configurations (API & Socket URLs)
-│   ├── angular.json
-│   └── package.json
-│
-├── Server/                               # Node.js / Express / Socket.IO Server
-│   ├── src/
-│   │   ├── config/                       # Database (MongoDB Mongoose) & Redis Client
-│   │   ├── controllers/                  # HTTP Request Controllers
-│   │   ├── middleware/                   # JWT Auth, Room Access, Error, Zod Validation
-│   │   ├── models/                       # Mongoose Schemas (User, Room, RoomMember, Message)
-│   │   ├── repositories/                 # Data Access Layer / Database Queries
-│   │   ├── routes/                       # Express REST Route Definitions
-│   │   ├── services/                     # Business Logic & Presence Engine
-│   │   ├── sockets/                      # Socket.IO Server, Auth & Event Handlers
-│   │   ├── utils/                        # AppError, JWT, Password & Response Helpers
-│   │   ├── validations/                  # Zod Request Validation Schemas
-│   │   ├── app.js                        # Express App Configuration & Middlewares
-│   │   └── server.js                     # HTTP Server, Socket.IO & Graceful Shutdown
-│   ├── Dockerfile                        # Multi-Stage Production Container Build
-│   ├── docker-compose.yml                # Docker Orchestration (API + Redis)
-│   └── package.json
-│
-└── README.md                             # Project Documentation
+```bash
+git clone https://github.com/ajitpal0821/real-time-chat-platform.git
+cd real-time-chat-platform
 ```
 
 ---
 
-## 🛠 Tech Stack
+### 2. Environment Configuration
 
-| Domain | Technology | Description |
-| :--- | :--- | :--- |
-| **Frontend Framework** | **Angular 18+** | Standalone Components, Signal-based Reactive State |
-| **UI & Styling** | **Angular Material & SCSS** | Customized dark-mode glassmorphic theme |
-| **Client Transport** | **RxJS & socket.io-client** | Stream orchestration & WebSocket connections |
-| **Backend Runtime** | **Node.js 20+ & Express 5** | RESTful routing, clean layered architecture |
-| **Real-Time Engine** | **Socket.IO 4.x** | Bi-directional WebSocket communication |
-| **Pub/Sub & Cache** | **Redis 7 & @socket.io/redis-adapter** | Cross-instance messaging & multi-tab presence |
-| **Database** | **MongoDB Atlas & Mongoose** | Persistent storage for users, channels, and messages |
-| **Authentication** | **JWT & bcrypt** | Access/refresh token pattern with secure password hashing |
-| **Validation** | **Zod** | Schema-first request body validation |
-| **DevOps** | **Docker & Docker Compose** | Containerized services with health checks and restart policies |
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-* **Node.js** 20.x or higher
-* **npm** 10.x or higher
-* **Docker Desktop** (for running Redis & containerized backend)
-* **MongoDB Atlas** cluster URI
-
----
-
-### Environment Configuration
-
-Create a `.env` file inside the `Server/` directory:
+Create a `.env` file in the `Server/` directory:
 
 ```env
 # Server Configuration
@@ -211,17 +163,18 @@ NODE_ENV=development
 MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/chat_db?retryWrites=true&w=majority
 
 # Security (JWT)
-JWT_ACCESS_SECRET=your_super_secret_access_key_here
-JWT_REFRESH_SECRET=your_super_secret_refresh_key_here
+JWT_ACCESS_SECRET=your_access_secret_key_here
+JWT_REFRESH_SECRET=your_refresh_secret_key_here
 
-# Redis
+# Redis Cache & Pub/Sub
 REDIS_URL=redis://localhost:6379
 
-# Client CORS
+# Client URL (for CORS)
 CLIENT_URL=http://localhost:4200
 ```
 
 Verify client environment in `client/src/environment/environment.development.ts`:
+
 ```typescript
 export const environment = {
   production: false,
@@ -232,73 +185,125 @@ export const environment = {
 
 ---
 
-### Running with Docker Compose (Redis)
+### 3. Start Redis
 
-Start Redis with Docker Compose:
+Using Docker Compose:
+
 ```bash
 docker compose -f Server/docker-compose.yml up -d redis
 ```
 
-Verify Redis is responsive:
+Verify Redis is running:
 ```bash
 docker exec -it chat-redis redis-cli ping
-# Response: PONG
+# Output: PONG
 ```
 
 ---
 
-### Running Locally for Development
+### 4. Install Dependencies & Run
 
-From the root directory, start both the Server and Angular Client:
+You can run both client and server from the root directory:
 
-1. **Start the Backend Server (Port 3000):**
-   ```bash
-   npm run server
-   ```
+#### Install Dependencies
+```bash
+# Install root, server, and client dependencies
+npm install
+npm --prefix Server install
+npm --prefix client install
+```
 
-2. **Start the Angular Client (Port 4200):**
-   ```bash
-   npm run client
-   ```
+#### Start the Backend Server (Port 3000)
+```bash
+npm run server
+```
 
-3. Open **`http://localhost:4200`** in your browser.
+#### Start the Angular Client (Port 4200)
+```bash
+npm run client
+```
+
+Navigate to **`http://localhost:4200`** in your browser to start chatting.
 
 ---
 
-## 📡 API & Socket Reference
+## 📡 API & Socket Event Reference
 
-### REST Endpoints
+### REST API Endpoints
+
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :---: |
 | `POST` | `/api/auth/register` | Register new user account | No |
-| `POST` | `/api/auth/login` | Login and obtain JWT tokens | No |
-| `GET` | `/api/rooms` | Retrieve user's joined channels | Yes |
+| `POST` | `/api/auth/login` | Login and issue access & refresh tokens | No |
+| `GET` | `/api/users/me` | Fetch authenticated user profile | Yes |
+| `GET` | `/api/rooms` | Retrieve all user joined channels | Yes |
 | `POST` | `/api/rooms` | Create a new public/private channel | Yes |
-| `POST` | `/api/rooms/:id/join` | Join an existing channel | Yes |
+| `POST` | `/api/rooms/:id/join` | Join a channel by ID | Yes |
 | `POST` | `/api/rooms/:id/leave` | Leave a channel | Yes |
-| `GET` | `/api/rooms/:id/members`| Get room members list | Yes |
-| `GET` | `/api/rooms/:id/messages`| Fetch paginated message history (`?limit=50&before=`) | Yes |
+| `GET` | `/api/rooms/:id/members`| Get active room members list | Yes |
+| `GET` | `/api/rooms/:roomId/messages` | Cursor-paginated message history (`?limit=50&before=`) | Yes |
+| `GET` | `/health` | Service health check | No |
 
-### Real-Time Socket Events
+### Real-Time Socket.IO Events
+
 | Event Name | Direction | Payload | Description |
 | :--- | :---: | :--- | :--- |
-| `join_room` | Client ➔ Server | `{ roomId }` | Subscribes socket to channel channel |
-| `leave_room` | Client ➔ Server | `{ roomId }` | Unsubscribes socket from channel |
+| `join_room` | Client ➔ Server | `{ roomId }` | Joins a channel socket room |
+| `leave_room` | Client ➔ Server | `{ roomId }` | Leaves a channel socket room |
 | `send_message` | Client ➔ Server | `{ roomId, content, messageType }` | Saves to DB and broadcasts to room |
-| `new_message` | Server ➔ Client | `Message` | Broadcasts new message to room peers |
-| `update_message` | Client ➔ Server | `{ roomId, messageId, content }` | Edits message and broadcasts update |
-| `message_updated`| Server ➔ Client | `Message` | Broadcasts updated message content |
-| `delete_message` | Client ➔ Server | `{ roomId, messageId }` | Deletes message and broadcasts deletion |
-| `message_deleted`| Server ➔ Client | `{ roomId, messageId, deletedBy }`| Informs peers to remove message from DOM |
-| `typing_start` | Client ➔ Server | `{ roomId }` | User started typing (debounced) |
-| `typing_stop` | Client ➔ Server | `{ roomId }` | User stopped typing |
-| `user_typing` | Server ➔ Client | `{ userId }` | Broadcasts active typing state to room |
-| `user_stopped_typing`| Server ➔ Client| `{ userId }` | Clears active typing state |
-| `get_online_users`| Client ➔ Server | `{}` (Ack) | Retrieves snapshot of active online user IDs |
-| `user_status_changed`| Server ➔ Client| `{ userId, status }` | Broadcasts global online/offline transitions |
+| `new_message` | Server ➔ Client | `Message` object | Broadcasts incoming message to channel members |
+| `update_message` | Client ➔ Server | `{ roomId, messageId, content }` | Updates message content in database |
+| `message_updated` | Server ➔ Client | `Message` object | Broadcasts edited message payload |
+| `delete_message` | Client ➔ Server | `{ roomId, messageId }` | Deletes message in database |
+| `message_deleted` | Server ➔ Client | `{ roomId, messageId, deletedBy }` | Informs peers to remove message from UI |
+| `typing_start` | Client ➔ Server | `{ roomId }` | Notifies server that user is typing |
+| `typing_stop` | Client ➔ Server | `{ roomId }` | Notifies server that user stopped typing |
+| `user_typing` | Server ➔ Client | `{ userId, username }` | Broadcasts user typing state to channel |
+| `user_stopped_typing`| Server ➔ Client | `{ userId }` | Broadcasts typing stop event |
+| `get_online_users` | Client ➔ Server | `{}` (Ack) | Retrieves current list of online user IDs |
+| `user_status_changed` | Server ➔ Client | `{ userId, status }` | Global broadcast for online/offline transitions |
+
+---
+
+## 📂 Repository Structure
+
+```text
+real-time-chat-platform/
+├── client/                               # Angular 18 Single Page Application
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── core/                     # Singleton services, JWT interceptors, guards, models
+│   │   │   ├── features/
+│   │   │   │   ├── auth/                 # Login & Registration views
+│   │   │   │   └── chat/                 # ChatLayout, RoomList, MessageList, Dialogs
+│   │   │   └── shared/                   # Shared UI components & material modules
+│   │   └── environment/                  # Environment configurations
+│   ├── angular.json
+│   └── package.json
+│
+├── Server/                               # Node.js + Express + Socket.IO Server
+│   ├── src/
+│   │   ├── config/                       # MongoDB Mongoose & Redis client configs
+│   │   ├── controllers/                  # REST request handlers
+│   │   ├── middleware/                   # JWT auth, rate limiter, error & validation
+│   │   ├── models/                       # Mongoose schemas (User, Room, Message, RoomMember)
+│   │   ├── repositories/                 # Data access layer
+│   │   ├── routes/                       # Express route definitions
+│   │   ├── services/                     # Business logic & Redis presence service
+│   │   ├── sockets/                      # Socket.IO connection & event handlers
+│   │   ├── utils/                        # AppError, token & password utils
+│   │   ├── validations/                  # Zod request validation schemas
+│   │   ├── app.js                        # Express application configuration
+│   │   └── server.js                     # Server entrypoint & graceful shutdown
+│   ├── Dockerfile                        # Multi-stage production container build
+│   ├── docker-compose.yml                # Docker compose orchestration (API + Redis)
+│   └── package.json
+│
+└── README.md                             # Project documentation
+```
 
 ---
 
 ## 📄 License
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details. -->
-Coming Soon..
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
